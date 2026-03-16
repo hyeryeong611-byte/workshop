@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skelter Labs Workshop 2026</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --purple: #7B6FC0;
+    --purple-deep: #5B4FA0;
+    --lavender: #B8ADE8;
+    --pink: #F4B8D0;
+    --peach: #FDDBC7;
+    --mint: #B5EAD7;
+    --yellow: #FFF3C4;
+    --sky: #BDE0FE;
+    --coral: #FFB5A7;
+    --bg-start: #E8E0F4;
+    --bg-end: #F7E8EF;
+    --dark: #3D3558;
+    --gray: #8B83A6;
+    --light: rgba(255,255,255,0.5);
+    --white: #FFFFFF;
+    --glass: rgba(255,255,255,0.6);
+    --glass-border: rgba(255,255,255,0.8);
+    --radius: 28px;
+    --radius-sm: 16px;
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 50%, #E0EAF7 100%);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Floating Blobs ── */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(60px);
+    opacity: 0.5; z-index: 0; pointer-events: none;
+  }
+  .blob-1 { width: 350px; height: 350px; background: #D8CCFA; top: -80px; left: -60px; animation: blobFloat1 10s ease-in-out infinite; }
+  .blob-2 { width: 280px; height: 280px; background: #FDDBC7; top: 35%; right: -40px; animation: blobFloat2 12s ease-in-out infinite; }
+  .blob-3 { width: 240px; height: 240px; background: #BDE0FE; bottom: -40px; left: 20%; animation: blobFloat3 11s ease-in-out infinite; }
+  .blob-4 { width: 200px; height: 200px; background: #B5EAD7; top: 60%; left: -30px; animation: blobFloat2 9s ease-in-out infinite reverse; }
+  @keyframes blobFloat1 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(30px,20px) scale(1.05);} }
+  @keyframes blobFloat2 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-20px,30px) scale(1.08);} }
+  @keyframes blobFloat3 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(20px,-25px) scale(1.04);} }
+
+  /* ── Floating Dots ── */
+  .dots { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .dot {
+    position: absolute; border-radius: 50%;
+    animation: dotFloat 4s ease-in-out infinite;
+  }
+  @keyframes dotFloat {
+    0%,100% { opacity: 0.3; transform: translateY(0) scale(1); }
+    50% { opacity: 0.7; transform: translateY(-15px) scale(1.3); }
+  }
+
+  .container {
+    position: relative; z-index: 1; max-width: 480px;
+    margin: 0 auto; padding: 16px 16px 40px;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ── Mascot ── */
+  .mascot {
+    position: relative; width: 120px; height: 120px; margin: 0 auto 16px;
+    animation: mascotBounce 3s ease-in-out infinite;
+  }
+  .mascot-body {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, #C8BFFA 0%, #E8D5F5 40%, #F4E3F8 100%);
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(123,111,192,0.2), inset 0 -8px 20px rgba(255,255,255,0.4), inset 0 8px 15px rgba(255,255,255,0.6);
+  }
+  .mascot-body::before {
+    content: ''; position: absolute; width: 40%; height: 25%;
+    top: 12%; left: 20%; border-radius: 50%;
+    background: rgba(255,255,255,0.5); filter: blur(4px);
+  }
+  .mascot-face { position: absolute; top: 42%; left: 50%; transform: translateX(-50%); }
+  .mascot-eyes {
+    display: flex; gap: 18px; justify-content: center; margin-bottom: 4px;
+  }
+  .mascot-eye {
+    width: 8px; height: 10px; background: var(--dark);
+    border-radius: 50%; position: relative;
+    animation: blink 4s ease-in-out infinite;
+  }
+  .mascot-eye::after {
+    content: ''; position: absolute; width: 3px; height: 3px;
+    background: white; border-radius: 50%; top: 1px; right: 1px;
+  }
+  @keyframes blink { 0%,42%,50%,100%{transform:scaleY(1);} 45%{transform:scaleY(0.1);} }
+  .mascot-mouth {
+    width: 14px; height: 7px; border-bottom: 2.5px solid var(--dark);
+    border-radius: 0 0 50% 50%; margin: 2px auto 0;
+  }
+  .mascot-cheeks {
+    display: flex; justify-content: space-between;
+    width: 70px; margin: 0 auto; margin-top: 2px;
+  }
+  .mascot-cheek {
+    width: 14px; height: 8px; border-radius: 50%;
+    background: rgba(244,184,208,0.5);
+  }
+  .mascot-sparkle {
+    position: absolute; font-size: 16px;
+    animation: sparkleFloat 2s ease-in-out infinite;
+  }
+  .mascot-sparkle:nth-child(1) { top: -5px; right: -5px; animation-delay: 0s; }
+  .mascot-sparkle:nth-child(2) { top: 10px; left: -10px; animation-delay: 0.7s; font-size: 12px; }
+  .mascot-sparkle:nth-child(3) { bottom: 15px; right: -12px; animation-delay: 1.3s; font-size: 14px; }
+  @keyframes sparkleFloat { 0%,100%{opacity:0.4;transform:scale(0.8) rotate(0deg);} 50%{opacity:1;transform:scale(1.1) rotate(15deg);} }
+  @keyframes mascotBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+  .mascot-sm { width: 60px; height: 60px; margin: 0 auto 10px; }
+  .mascot-sm .mascot-body { box-shadow: 0 10px 20px rgba(123,111,192,0.15), inset 0 -4px 10px rgba(255,255,255,0.4), inset 0 4px 8px rgba(255,255,255,0.6); }
+  .mascot-sm .mascot-face { top: 38%; }
+  .mascot-sm .mascot-eyes { gap: 10px; }
+  .mascot-sm .mascot-eye { width: 5px; height: 6px; }
+  .mascot-sm .mascot-eye::after { width: 2px; height: 2px; }
+  .mascot-sm .mascot-mouth { width: 9px; height: 5px; border-bottom-width: 2px; }
+  .mascot-sm .mascot-cheeks { width: 40px; }
+  .mascot-sm .mascot-cheek { width: 9px; height: 5px; }
+  .mascot-sm .mascot-sparkle { display: none; }
+
+  /* ── Glass Card ── */
+  .card {
+    background: var(--glass);
+    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    border-radius: var(--radius); padding: 32px 24px; width: 100%;
+    box-shadow: 0 8px 32px rgba(91,79,160,0.08), 0 2px 8px rgba(0,0,0,0.03);
+    border: 1.5px solid var(--glass-border);
+    animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  /* ── Progress ── */
+  .progress-wrap { width: 100%; margin-bottom: 24px; display: none; }
+  .progress-wrap.show { display: block; }
+  .progress-bar-bg {
+    width: 100%; height: 8px; background: rgba(255,255,255,0.5);
+    border-radius: 4px; overflow: hidden; margin-bottom: 8px;
+    backdrop-filter: blur(8px);
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--lavender), var(--pink), var(--peach));
+    background-size: 200% 100%;
+    animation: progressShimmer 3s ease infinite;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes progressShimmer { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+  .progress-label { text-align: center; font-size: 13px; color: var(--gray); font-weight: 500; }
+
+  /* ── Typography ── */
+  h1 {
+    font-size: 24px; font-weight: 800; text-align: center;
+    color: var(--purple-deep);
+    margin-bottom: 8px; line-height: 1.4;
+  }
+  h2 { font-size: 20px; font-weight: 700; color: var(--purple-deep); text-align: center; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--gray); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+
+  /* ── Info Pills ── */
+  .info-pills {
+    display: flex; flex-direction: column; gap: 8px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .info-pill { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--dark); }
+  .info-pill .icon { font-size: 18px; width: 28px; text-align: center; }
+  .info-pill .label { font-weight: 700; min-width: 56px; color: var(--purple-deep); font-size: 13px; }
+
+  /* ── Map ── */
+  .map-wrap {
+    margin-top: 10px; border-radius: var(--radius-sm); overflow: hidden;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  }
+  .map-wrap iframe { display: block; width: 100%; height: 160px; border: none; }
+
+  /* ── Form Elements ── */
+  label.field-label {
+    display: block; font-size: 13px; font-weight: 700;
+    color: var(--purple-deep); margin-bottom: 8px; margin-top: 16px;
+  }
+  label.field-label:first-of-type { margin-top: 0; }
+  .field-label .required { color: var(--coral); margin-left: 2px; }
+
+  input[type="text"], select, textarea {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid rgba(184,173,232,0.3); border-radius: var(--radius-sm);
+    font-size: 15px; font-family: inherit; color: var(--dark);
+    background: rgba(255,255,255,0.7); transition: all 0.3s ease; outline: none;
+    backdrop-filter: blur(8px);
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--lavender);
+    box-shadow: 0 0 0 4px rgba(184,173,232,0.15);
+    background: rgba(255,255,255,0.85);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* ── RSVP ── */
+  .rsvp-options { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .rsvp-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px; border: 1.5px solid rgba(255,255,255,0.7);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.5); backdrop-filter: blur(12px);
+    cursor: pointer; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 15px;
+  }
+  .rsvp-btn:hover { border-color: var(--lavender); transform: translateX(4px); background: rgba(255,255,255,0.7); }
+  .rsvp-btn.selected {
+    border-color: var(--purple); background: rgba(184,173,232,0.15);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(123,111,192,0.12);
+  }
+  .rsvp-btn .rsvp-emoji { font-size: 28px; }
+  .rsvp-btn .rsvp-text { font-weight: 700; color: var(--dark); }
+  .rsvp-btn .rsvp-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+  .reason-field { margin-top: 12px; display: none; animation: cardIn 0.3s ease-out; }
+  .reason-field.show { display: block; }
+
+  /* ── MBTI ── */
+  .mbti-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 4px; }
+  .mbti-chip {
+    padding: 12px 4px; text-align: center;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px);
+    cursor: pointer; font-size: 13px; font-weight: 700;
+    color: var(--gray); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .mbti-chip:hover { border-color: var(--lavender); transform: scale(1.06); background: rgba(255,255,255,0.7); }
+  .mbti-chip.selected {
+    border-color: var(--purple);
+    background: linear-gradient(135deg, rgba(184,173,232,0.25), rgba(244,184,208,0.15));
+    color: var(--purple-deep); transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(123,111,192,0.15);
+  }
+  .mbti-unknown {
+    grid-column: 1 / -1; padding: 12px; margin-top: 4px;
+    text-align: center; border: 1.5px dashed rgba(184,173,232,0.4);
+    border-radius: var(--radius-sm); background: rgba(255,255,255,0.35);
+    cursor: pointer; font-size: 13px; color: var(--gray); transition: all 0.3s ease;
+  }
+  .mbti-unknown:hover { border-color: var(--lavender); background: rgba(255,255,255,0.55); }
+  .mbti-unknown.selected { border-color: var(--purple); background: rgba(184,173,232,0.12); color: var(--purple-deep); }
+  .mbti-desc {
+    text-align: center; margin-top: 12px; padding: 12px;
+    background: rgba(184,173,232,0.1); border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--purple-deep); display: none; animation: cardIn 0.3s ease-out;
+    border: 1px solid rgba(184,173,232,0.15);
+  }
+  .mbti-desc.show { display: block; }
+
+  /* ── MBTI Quiz ── */
+  .mbti-quiz { margin-top: 16px; display: none; animation: cardIn 0.4s ease-out; }
+  .mbti-quiz.show { display: block; }
+  .quiz-q {
+    margin-bottom: 14px; padding: 16px;
+    background: rgba(255,255,255,0.5); border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius-sm); transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+  .quiz-q.answered { border-color: var(--lavender); background: rgba(184,173,232,0.08); }
+  .quiz-q-text { font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 10px; line-height: 1.5; }
+  .quiz-q-text .quiz-name { color: var(--purple); }
+  .quiz-opts { display: flex; gap: 8px; }
+  .quiz-opt {
+    flex: 1; padding: 11px 6px; text-align: center;
+    border: 1.5px solid rgba(255,255,255,0.6); border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.5); cursor: pointer; font-size: 13px;
+    font-weight: 600; color: var(--dark); transition: all 0.3s ease;
+  }
+  .quiz-opt:hover { border-color: var(--lavender); transform: translateY(-2px); }
+  .quiz-opt.selected { border-color: var(--purple); background: rgba(184,173,232,0.15); color: var(--purple-deep); }
+  .quiz-result {
+    margin-top: 14px; padding: 16px; text-align: center;
+    background: linear-gradient(135deg, rgba(184,173,232,0.12), rgba(244,184,208,0.1));
+    border-radius: var(--radius-sm); display: none; animation: cardIn 0.5s ease-out;
+    border: 1px solid rgba(184,173,232,0.2);
+  }
+  .quiz-result.show { display: block; }
+  .quiz-result-type { font-size: 28px; font-weight: 800; color: var(--purple-deep); margin-bottom: 4px; }
+  .quiz-result-desc { font-size: 13px; color: var(--gray); }
+
+  /* ── Survey ── */
+  .question-block { margin-top: 22px; }
+  .question-block:first-child { margin-top: 0; }
+  .q-title {
+    font-size: 14px; font-weight: 700; color: var(--dark);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .q-num {
+    background: linear-gradient(135deg, var(--purple), var(--lavender));
+    color: white; font-size: 11px; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* ── Option Cards ── */
+  .option-cards { display: flex; gap: 10px; margin-top: 4px; }
+  .option-card {
+    flex: 1; padding: 16px 10px;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px);
+    cursor: pointer; text-align: center; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .option-card:hover { border-color: var(--lavender); transform: translateY(-3px); background: rgba(255,255,255,0.65); }
+  .option-card.selected {
+    border-color: var(--purple); background: rgba(184,173,232,0.15);
+    transform: translateY(-3px); box-shadow: 0 6px 20px rgba(123,111,192,0.12);
+  }
+  .option-card .opt-emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+  .option-card .opt-label { font-size: 14px; font-weight: 700; color: var(--dark); }
+  .option-card .opt-desc { font-size: 11px; color: var(--gray); margin-top: 4px; line-height: 1.4; }
+  .option-card.selected .opt-desc { color: var(--purple-deep); }
+
+  .size-grid { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .size-chip {
+    padding: 10px 6px; min-width: 65px; text-align: center;
+    border: 1.5px solid rgba(255,255,255,0.6); border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px); cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .size-chip:hover { border-color: var(--lavender); transform: scale(1.05); }
+  .size-chip.selected {
+    border-color: var(--purple); background: rgba(184,173,232,0.15);
+    transform: scale(1.05); box-shadow: 0 4px 12px rgba(123,111,192,0.12);
+  }
+  .size-chip .size-label { font-size: 15px; font-weight: 800; color: var(--dark); }
+  .size-chip.selected .size-label { color: var(--purple-deep); }
+  .size-chip .size-range { font-size: 10px; color: var(--gray); margin-top: 2px; }
+
+  .choice-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .choice-chip {
+    padding: 10px 16px;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 50px;
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px);
+    cursor: pointer; font-size: 13px; color: var(--dark);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap;
+  }
+  .choice-chip:hover { border-color: var(--lavender); transform: translateY(-2px); }
+  .choice-chip.selected {
+    border-color: var(--purple); background: rgba(184,173,232,0.15);
+    color: var(--purple-deep); font-weight: 600;
+    transform: translateY(-2px); box-shadow: 0 4px 12px rgba(123,111,192,0.1);
+  }
+  .hint { font-size: 11px; color: var(--gray); margin-top: 6px; }
+
+  .etc-input-wrap { margin-top: 8px; display: none; animation: cardIn 0.3s ease-out; }
+  .etc-input-wrap.show { display: block; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: block; width: 100%; padding: 15px;
+    border: none; border-radius: 50px;
+    font-size: 15px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); margin-top: 24px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--lavender) 50%, var(--pink) 100%);
+    background-size: 200% 200%; animation: progressShimmer 4s ease infinite;
+    color: white; box-shadow: 0 6px 24px rgba(123,111,192,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 10px 32px rgba(123,111,192,0.35); }
+  .btn-primary:active { transform: translateY(0) scale(0.99); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.6); color: var(--purple-deep);
+    border: 1.5px solid rgba(184,173,232,0.3); margin-top: 10px;
+    backdrop-filter: blur(8px);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.8); transform: translateY(-2px); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+  .btn-row .btn { flex: 1; margin-top: 0; }
+  .btn-back {
+    background: rgba(255,255,255,0.5); color: var(--gray);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    padding: 15px; border-radius: 50px;
+    font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: all 0.3s ease; backdrop-filter: blur(8px);
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.7); color: var(--dark); }
+
+  /* ── Done ── */
+  .done-emoji { font-size: 72px; text-align: center; display: block; margin-bottom: 12px; animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes popIn {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .countdown-box {
+    text-align: center; margin-top: 16px; padding: 18px;
+    background: rgba(255,255,255,0.4); backdrop-filter: blur(12px);
+    border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.6);
+  }
+  .countdown-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
+  .countdown-num { font-size: 40px; font-weight: 800; color: var(--purple-deep); }
+  .countdown-unit { font-size: 13px; color: var(--lavender); }
+
+  .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+  .footer {
+    margin-top: 20px; text-align: center;
+    font-size: 11px; color: var(--gray); line-height: 1.6; opacity: 0.7;
+  }
+
+  .error-msg {
+    color: #E06469; font-size: 13px; margin-top: 6px;
+    display: none; animation: shake 0.4s ease;
+  }
+  .error-msg.show { display: block; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(232,224,244,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; backdrop-filter: blur(8px); display: none;
+  }
+  .loading-overlay.show { display: flex; }
+  .loader {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(184,173,232,0.3);
+    border-top-color: var(--purple); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 400px) {
+    .container { padding: 16px 12px 32px; }
+    .card { padding: 24px 18px; }
+    h1 { font-size: 21px; }
+    .mascot { width: 100px; height: 100px; }
+    .mbti-grid { gap: 6px; }
+    .mbti-chip { padding: 10px 2px; font-size: 12px; }
+    .option-cards { flex-direction: column; }
+    .size-grid { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+<div class="dots" id="dots"></div>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="loader"></div></div>
+<canvas class="confetti" id="confettiCanvas"></canvas>
+
+<div class="container">
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:33%"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <!-- ════════ STEP 0: Welcome ════════ -->
+  <div class="card step active" id="step0" style="padding:20px 20px;">
+    <img src="welcome.png" alt="Welcome" style="display:block; width:145px; height:auto; margin:0 auto 10px; border-radius:14px;">
+    <h1 style="font-size:19px; margin-bottom:10px; line-height:1.45;">2026 스켈터랩스 워크샵에<br>스켈티들을 초대합니다!</h1>
+
+    <div class="info-pills" style="padding:12px 14px; margin-bottom:10px; gap:6px;">
+      <div class="info-pill" style="font-size:13px;">
+        <span class="icon" style="font-size:15px;">📅</span>
+        <span class="label" style="min-width:auto;">일시</span>
+        <span>2026. 4. 3 (금) ~ 4 (토)</span>
+      </div>
+      <div class="info-pill" style="font-size:13px;">
+        <span class="icon" style="font-size:15px;">📍</span>
+        <span class="label" style="min-width:auto;">장소</span>
+        <span>시흥 웨이브엠호텔 <strong>웨스트</strong></span>
+      </div>
+    </div>
+
+    <!-- 답변마감 카운트다운 -->
+    <div id="deadlineCountdown" style="text-align:center; padding:10px; background:linear-gradient(135deg, rgba(184,173,232,0.12), rgba(244,184,208,0.1)); border-radius:var(--radius-sm); border:1px solid rgba(184,173,232,0.15); margin-bottom:10px;">
+      <div style="font-size:11px; color:var(--gray); margin-bottom:3px;">⏰ 답변마감까지</div>
+      <div id="deadlineTimer" style="font-size:20px; font-weight:800; color:var(--purple-deep); letter-spacing:1px;"></div>
+      <div style="font-size:10px; color:var(--gray); margin-top:2px;">3월 18일 (수) 자정 마감</div>
+    </div>
+
+    <div class="map-wrap" style="margin-top:0;">
+      <iframe src="https://maps.google.com/maps?q=%EC%8B%9C%ED%9D%A5+%EC%9B%A8%EC%9D%B4%EB%B8%8C%EC%97%A0%ED%98%B8%ED%85%94+%EC%9B%A8%EC%8A%A4%ED%8A%B8&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="fullscreen"></iframe>
+    </div>
+
+    <p class="subtitle" style="margin-bottom:0; margin-top:10px; font-size:13px;">
+      참석 여부와 간단한 설문만 응답해주세요!<br>
+      <strong style="color:var(--purple-deep)">2분이면 끝나요 💜</strong>
+    </p>
+
+    <button class="btn btn-primary" onclick="goToStep(1)" style="margin-top:16px;">시작하기 →</button>
+  </div>
+
+  <!-- ════════ STEP 1: RSVP ════════ -->
+  <div class="card step" id="step1">
+    <div class="mascot mascot-sm" style="animation:mascotBounce 3s ease-in-out infinite;">
+      <div class="mascot-body">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><div class="mascot-eye"></div><div class="mascot-eye"></div></div>
+          <div class="mascot-mouth"></div>
+          <div class="mascot-cheeks"><div class="mascot-cheek"></div><div class="mascot-cheek"></div></div>
+        </div>
+      </div>
+    </div>
+    <h2>참석 여부</h2>
+    <p class="subtitle">워크샵에 함께해주실 수 있나요?</p>
+
+    <label class="field-label">이름 <span class="required">*</span></label>
+    <input type="text" id="userName" placeholder="이름을 입력해주세요">
+    <div class="error-msg" id="nameError">이름을 입력해주세요!</div>
+
+    <label class="field-label" style="margin-top:18px">참석 여부 <span class="required">*</span></label>
+    <div class="rsvp-options">
+      <div class="rsvp-btn" data-value="attend" onclick="selectRSVP(this)">
+        <span class="rsvp-emoji">🙋</span>
+        <div>
+          <div class="rsvp-text">참석할게요!</div>
+          <div class="rsvp-sub">기대되는 마음 한가득</div>
+        </div>
+      </div>
+      <div class="rsvp-btn" data-value="absent" onclick="selectRSVP(this)">
+        <span class="rsvp-emoji">😢</span>
+        <div>
+          <div class="rsvp-text">아쉽지만 불참이에요</div>
+          <div class="rsvp-sub">다음엔 꼭 함께해요</div>
+        </div>
+      </div>
+    </div>
+    <div class="error-msg" id="rsvpError">참석 여부를 선택해주세요!</div>
+
+    <div class="reason-field" id="reasonField">
+      <label class="field-label">사유 (선택)</label>
+      <textarea id="rsvpReason" placeholder="간단히 사유를 알려주시면 감사해요 :)"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(0)">← 이전</button>
+      <button class="btn btn-primary" onclick="validateStep1()">다음으로 →</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 2: MBTI ════════ -->
+  <div class="card step" id="step2">
+    <div class="mascot mascot-sm" style="animation:mascotBounce 3s ease-in-out infinite;animation-delay:-1s;">
+      <div class="mascot-body">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><div class="mascot-eye"></div><div class="mascot-eye"></div></div>
+          <div class="mascot-mouth"></div>
+          <div class="mascot-cheeks"><div class="mascot-cheek"></div><div class="mascot-cheek"></div></div>
+        </div>
+      </div>
+    </div>
+    <h2>나의 MBTI는?</h2>
+    <p class="subtitle">팀 매칭과 활동 그룹핑에 참고할게요!</p>
+
+    <label class="field-label">MBTI 유형 <span class="required">*</span></label>
+    <div class="mbti-grid" id="mbtiGrid"></div>
+    <div class="mbti-unknown" id="mbtiUnknown" onclick="startMBTIQuiz()">🤷 잘 모르겠어요 — 간단한 질문으로 알아볼래요!</div>
+    <div class="mbti-desc" id="mbtiDesc"></div>
+
+    <div class="mbti-quiz" id="mbtiQuiz">
+      <div class="quiz-q" id="quizQ1">
+        <div class="quiz-q-text"><span class="quiz-name" id="quizName1"></span>님은 외향적인가요?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(1,'E',this)">🙋 네, 맞아요!</div>
+          <div class="quiz-opt" onclick="answerQuiz(1,'I',this)">🤫 아니요, 내향적이에요</div>
+        </div>
+      </div>
+      <div class="quiz-q" id="quizQ2">
+        <div class="quiz-q-text">상상력이 풍부한 편인가요?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(2,'N',this)">💭 네, 상상 좋아해요!</div>
+          <div class="quiz-opt" onclick="answerQuiz(2,'S',this)">📐 아니요, 현실적이에요</div>
+        </div>
+      </div>
+      <div class="quiz-q" id="quizQ3">
+        <div class="quiz-q-text">친구가 고민을 얘기하면 해결책을 먼저 말해주는 편인가요?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(3,'T',this)">🧩 네, 해결책부터!</div>
+          <div class="quiz-opt" onclick="answerQuiz(3,'F',this)">🤗 아니요, 공감부터!</div>
+        </div>
+      </div>
+      <div class="quiz-q" id="quizQ4">
+        <div class="quiz-q-text">여행을 갈 때 분단위로 계획을 짜시나요?</div>
+        <div class="quiz-opts">
+          <div class="quiz-opt" onclick="answerQuiz(4,'J',this)">📋 네, 계획파예요!</div>
+          <div class="quiz-opt" onclick="answerQuiz(4,'P',this)">🌊 아니요, 즉흥파!</div>
+        </div>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="quiz-result-type" id="quizResultType"></div>
+        <div class="quiz-result-desc" id="quizResultDesc"></div>
+      </div>
+    </div>
+
+    <div class="error-msg" id="mbtiError">MBTI를 선택해주세요!</div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(1)">← 이전</button>
+      <button class="btn btn-primary" onclick="validateStep2()">다음으로 →</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 3: Survey ════════ -->
+  <div class="card step" id="step3">
+    <div class="mascot mascot-sm" style="animation:mascotBounce 3s ease-in-out infinite;animation-delay:-0.5s;">
+      <div class="mascot-body">
+        <div class="mascot-face">
+          <div class="mascot-eyes"><div class="mascot-eye"></div><div class="mascot-eye"></div></div>
+          <div class="mascot-mouth"></div>
+          <div class="mascot-cheeks"><div class="mascot-cheek"></div><div class="mascot-cheek"></div></div>
+        </div>
+      </div>
+    </div>
+    <h2>몇 가지만 더!</h2>
+    <p class="subtitle">워크샵 준비에 꼭 필요한 질문들이에요</p>
+
+    <div class="question-block">
+      <div class="q-title"><span class="q-num">1</span> 워크샵 장소까지 자차로 이동하시나요?</div>
+      <div class="option-cards" id="transportOpts">
+        <div class="option-card" onclick="selectOption('transport','yes',this)">
+          <span class="opt-emoji">🚗</span>
+          <div class="opt-label">네, 자차요!</div>
+          <div class="opt-desc">12시까지 웨이브엠호텔에서 만나요!</div>
+        </div>
+        <div class="option-card" onclick="selectOption('transport','no',this)">
+          <span class="opt-emoji">🚌</span>
+          <div class="opt-label">아니요!</div>
+          <div class="opt-desc">9시 30분까지 회사에서 만나서 버스로 같이 가요!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="q-title"><span class="q-num">2</span> 사이즈를 알려주세요! 👕</div>
+      <p style="font-size:12px; color:var(--gray); margin-bottom:8px; line-height:1.5;">단체 후드 집업을 제작할 예정이에요!</p>
+      <div class="size-grid" id="sizeOpts">
+        <div class="size-chip" onclick="selectOption('tshirt','S',this)"><div class="size-label">S</div><div class="size-range">90~95</div></div>
+        <div class="size-chip" onclick="selectOption('tshirt','M',this)"><div class="size-label">M</div><div class="size-range">95~100</div></div>
+        <div class="size-chip" onclick="selectOption('tshirt','L',this)"><div class="size-label">L</div><div class="size-range">100~105</div></div>
+        <div class="size-chip" onclick="selectOption('tshirt','XL',this)"><div class="size-label">XL</div><div class="size-range">105~110</div></div>
+        <div class="size-chip" onclick="selectOption('tshirt','XXL',this)"><div class="size-label">XXL</div><div class="size-range">110 이상</div></div>
+      </div>
+    </div>
+
+    <!-- Q3: 조식 -->
+    <div class="question-block">
+      <div class="q-title"><span class="q-num">3</span> 둘째 날(4일) 아침 식사 하실 건가요? 🍳</div>
+      <div class="option-cards" id="breakfastOpts">
+        <div class="option-card" onclick="selectOption('breakfast','yes',this)">
+          <span class="opt-emoji">🥐</span>
+          <div class="opt-label">먹을래요!</div>
+          <div class="opt-desc">호텔 조식 준비해드려요</div>
+        </div>
+        <div class="option-card" onclick="selectOption('breakfast','no',this)">
+          <span class="opt-emoji">😴</span>
+          <div class="opt-label">괜찮아요</div>
+          <div class="opt-desc">좀 더 자고 싶어요...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="q-title"><span class="q-num">4</span> 나를 소개하는 한마디! ✨</div>
+      <input type="text" id="keywordInput" placeholder='예: "만년 카페인 중독자 ☕" "조용한 열정파 🔥"' maxlength="30">
+      <div class="hint">최대 30자</div>
+    </div>
+
+    <div class="question-block">
+      <div class="q-title"><span class="q-num">5</span> 회사에서 친한 사람이 있나요? 🤝</div>
+      <p style="font-size:12px; color:var(--gray); margin-bottom:8px; line-height:1.5;">
+        아이스브레이킹 때 새로운 사람과 매칭해드릴게요!
+      </p>
+      <textarea id="friendsInput" placeholder="친한 동료 이름을 적어주세요 (여러 명이면 쉼표로 구분)" style="min-height:60px;"></textarea>
+      <div class="hint">선택사항 · 비공개로 HR팀만 확인해요</div>
+    </div>
+
+    <div class="error-msg" id="prefError">모든 항목을 답변해주세요!</div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(2)">← 이전</button>
+      <button class="btn btn-primary" onclick="validateStep3()">제출하기 🚀</button>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 4: Done ════════ -->
+  <div class="card step" id="step4">
+    <span class="done-emoji">🎉</span>
+    <h1>응답 완료!</h1>
+    <p class="subtitle">소중한 답변 감사합니다 💜<br>워크샵에서 만나요!</p>
+
+    <div class="countdown-box">
+      <div class="countdown-label">워크샵까지</div>
+      <div><span class="countdown-num" id="dday">--</span> <span class="countdown-unit">일</span></div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="copyShareMsg()" style="margin-top:16px">
+      📋 동료에게 공유하기
+    </button>
+    <div id="copyToast" style="text-align:center; color:var(--mint); font-size:13px; margin-top:6px; display:none;">
+      ✅ 링크가 복사되었어요! 슬랙에 붙여넣기 해주세요
+    </div>
+  </div>
+
+  <div class="footer">
+    수집된 정보는 워크샵 프로그램 기획 목적으로만 사용되며,<br>
+    워크샵 종료 후 30일 이내 파기됩니다.<br>
+    <a href="admin.html" style="color:var(--gray);opacity:0.4;text-decoration:none;font-size:10px;">관리자</a>
+  </div>
+
+</div>
+
+<script>
+// ── State ──
+const state = {
+  step: 0, name: '', rsvp: '', rsvpReason: '', mbti: '',
+  transport: '', tshirt: '', breakfast: '', teamActivity: [], keyword: '', friends: ''
+};
+
+const quizAnswers = { 1: '', 2: '', 3: '', 4: '' };
+
+// ── MBTI Data ──
+const mbtiTypes = ['ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
+const mbtiDescs = {
+  ISTJ:"📋 신뢰의 아이콘! 계획대로 착착", ISFJ:"🤗 따뜻한 수호자, 모두의 든든함",
+  INFJ:"🔮 조용한 통찰력의 소유자", INTJ:"🧠 전략적 마스터마인드",
+  ISTP:"🔧 만능 해결사, 쿨한 장인", ISFP:"🎨 감성 충만 자유로운 영혼",
+  INFP:"🌙 이상을 꿈꾸는 몽상가", INTP:"💡 끝없는 호기심의 논리왕",
+  ESTP:"⚡ 에너지 폭발! 행동파 리더", ESFP:"🎉 분위기 메이커 그 자체",
+  ENFP:"🌈 어디서든 에너지 폭발!", ENTP:"🚀 아이디어 뱅크, 토론 마스터",
+  ESTJ:"📊 체계적인 조직의 기둥", ESFJ:"💝 사교적인 팀의 중심",
+  ENFJ:"🌟 카리스마 넘치는 리더", ENTJ:"👑 비전을 현실로 만드는 사람",
+  unknown:"🤷 괜찮아요! 워크샵에서 알아봐요~"
+};
+
+// ── Init ──
+(function init() {
+  const grid = document.getElementById('mbtiGrid');
+  mbtiTypes.forEach(type => {
+    const chip = document.createElement('div');
+    chip.className = 'mbti-chip';
+    chip.textContent = type;
+    chip.onclick = () => selectMBTI(type);
+    grid.appendChild(chip);
+  });
+
+  // Floating dots
+  const dotsEl = document.getElementById('dots');
+  const colors = ['rgba(184,173,232,0.4)','rgba(244,184,208,0.35)','rgba(181,234,215,0.35)','rgba(189,224,254,0.35)','rgba(253,219,199,0.35)'];
+  for (let i = 0; i < 25; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.style.left = Math.random() * 100 + '%';
+    d.style.top = Math.random() * 100 + '%';
+    d.style.width = d.style.height = (3 + Math.random() * 8) + 'px';
+    d.style.background = colors[Math.floor(Math.random() * colors.length)];
+    d.style.animationDelay = (Math.random() * 4) + 's';
+    d.style.animationDuration = (3 + Math.random() * 4) + 's';
+    dotsEl.appendChild(d);
+  }
+})();
+
+// ── Navigation ──
+function goToStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  state.step = n;
+  const pw = document.getElementById('progressWrap');
+  if (n >= 1 && n <= 3) { pw.classList.add('show'); updateProgress(n); }
+  else { pw.classList.remove('show'); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(current) {
+  const labels = ['','참석 여부','MBTI','설문'];
+  document.getElementById('progressLabel').textContent = `${current} / 3 · ${labels[current]}`;
+  document.getElementById('progressFill').style.width = (current / 3 * 100) + '%';
+}
+
+// ── RSVP ──
+function selectRSVP(el) {
+  document.querySelectorAll('.rsvp-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.rsvp = el.dataset.value;
+  document.getElementById('rsvpError').classList.remove('show');
+  const rf = document.getElementById('reasonField');
+  if (state.rsvp === 'absent') rf.classList.add('show');
+  else rf.classList.remove('show');
+}
+
+function validateStep1() {
+  let valid = true;
+  const name = document.getElementById('userName').value.trim();
+  if (!name) { document.getElementById('nameError').classList.add('show'); valid = false; }
+  else { document.getElementById('nameError').classList.remove('show'); state.name = name; }
+  if (!state.rsvp) { document.getElementById('rsvpError').classList.add('show'); valid = false; }
+  if (valid) { state.rsvpReason = document.getElementById('rsvpReason').value.trim(); goToStep(2); }
+}
+
+// ── MBTI ──
+function selectMBTI(type) {
+  state.mbti = type;
+  document.querySelectorAll('.mbti-chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('mbtiUnknown').classList.remove('selected');
+  document.getElementById('mbtiQuiz').classList.remove('show');
+  document.querySelectorAll('.mbti-chip').forEach(c => { if (c.textContent === type) c.classList.add('selected'); });
+  const desc = document.getElementById('mbtiDesc');
+  desc.textContent = mbtiDescs[type] || '';
+  desc.classList.add('show');
+  document.getElementById('mbtiError').classList.remove('show');
+}
+
+function startMBTIQuiz() {
+  document.querySelectorAll('.mbti-chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('mbtiUnknown').classList.add('selected');
+  document.getElementById('mbtiDesc').classList.remove('show');
+  state.mbti = '';
+  quizAnswers[1]=''; quizAnswers[2]=''; quizAnswers[3]=''; quizAnswers[4]='';
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.quiz-q').forEach(q => q.classList.remove('answered'));
+  document.getElementById('quizResult').classList.remove('show');
+  document.getElementById('quizName1').textContent = state.name || '응답자';
+  const quiz = document.getElementById('mbtiQuiz');
+  quiz.classList.add('show');
+  quiz.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('mbtiError').classList.remove('show');
+}
+
+function answerQuiz(qNum, value, el) {
+  el.parentElement.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('quizQ'+qNum).classList.add('answered');
+  quizAnswers[qNum] = value;
+  if (quizAnswers[1] && quizAnswers[2] && quizAnswers[3] && quizAnswers[4]) {
+    const result = quizAnswers[1]+quizAnswers[2]+quizAnswers[3]+quizAnswers[4];
+    state.mbti = result;
+    const re = document.getElementById('quizResult');
+    document.getElementById('quizResultType').textContent = result;
+    document.getElementById('quizResultDesc').textContent = mbtiDescs[result]||'';
+    re.classList.add('show');
+    re.scrollIntoView({ behavior:'smooth', block:'center' });
+    document.getElementById('mbtiUnknown').classList.remove('selected');
+    document.querySelectorAll('.mbti-chip').forEach(c => { if (c.textContent===result) c.classList.add('selected'); });
+    document.getElementById('mbtiError').classList.remove('show');
+  }
+}
+
+function validateStep2() {
+  if (!state.mbti) { document.getElementById('mbtiError').classList.add('show'); return; }
+  goToStep(3);
+}
+
+// ── Survey helpers ──
+function selectOption(field, value, el) {
+  const parent = el.parentElement;
+  parent.querySelectorAll('.option-card, .size-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state[field] = value;
+  document.getElementById('prefError').classList.remove('show');
+}
+
+function toggleChoice(el) { el.classList.toggle('selected'); }
+
+function toggleEtc(el) {
+  el.classList.toggle('selected');
+  const wrap = document.getElementById('etcInputWrap');
+  if (el.classList.contains('selected')) wrap.classList.add('show');
+  else { wrap.classList.remove('show'); document.getElementById('etcInput').value = ''; }
+}
+
+function getTeamChoices() {
+  const chips = document.querySelectorAll('[data-q="teamActivity"] .choice-chip.selected');
+  const choices = [];
+  chips.forEach(c => {
+    if (c.id === 'etcChip') {
+      const etcVal = document.getElementById('etcInput').value.trim();
+      if (etcVal) choices.push('기타: ' + etcVal);
+    } else {
+      choices.push(c.textContent.replace(/^[^\s]+\s/, '').trim());
+    }
+  });
+  return choices;
+}
+
+function validateStep3() {
+  const keyword = document.getElementById('keywordInput').value.trim();
+
+  if (!state.transport || !state.tshirt || !state.breakfast || !keyword) {
+    document.getElementById('prefError').classList.add('show');
+    return;
+  }
+  state.teamActivity = [];
+  state.keyword = keyword;
+  state.friends = document.getElementById('friendsInput').value.trim();
+  document.getElementById('prefError').classList.remove('show');
+  submitData();
+}
+
+// ── Supabase Config ──
+const SUPABASE_URL = 'https://moqgjlwbkbqpclhzqrbw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcWdqbHdia2JxcGNsaHpxcmJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjAxODcsImV4cCI6MjA4OTE5NjE4N30.J6QE6nv1BU-RO0oE6D5ssaF3p4P7qkIGIiEsuOIiUJg';
+
+// ── Submit ──
+async function submitData() {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('show');
+
+  const payload = {
+    name: state.name,
+    rsvp: state.rsvp,
+    rsvp_reason: state.rsvpReason,
+    mbti: state.mbti,
+    transport: state.transport,
+    tshirt: state.tshirt,
+    breakfast: state.breakfast,
+    team_activity: state.teamActivity.join(', '),
+    keyword: state.keyword,
+    friends: state.friends
+  };
+
+  try {
+    // 먼저 INSERT 시도
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/workshop_responses`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    // 이름 중복이면 UPDATE로 재시도
+    if (res.status === 409) {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/workshop_responses?name=eq.${encodeURIComponent(payload.name)}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('Supabase error:', res.status, errText);
+      alert('저장 실패 (' + res.status + '): ' + errText);
+    }
+  } catch (err) {
+    console.error('Submit error:', err);
+    alert('네트워크 오류: ' + err.message);
+  }
+
+  overlay.classList.remove('show');
+  goToStep(4);
+  calcDday();
+  launchConfetti();
+}
+
+// ── D-Day ──
+function calcDday() {
+  const diff = Math.ceil((new Date('2026-04-03') - new Date()) / 86400000);
+  document.getElementById('dday').textContent = diff > 0 ? `D-${diff}` : 'D-Day!';
+}
+
+// ── Share ──
+function copyShareMsg() {
+  const msg = `🎪 스켈터랩스 워크샵 초대장이 도착했어요!\n📅 2026.04.03~04 | 📍 시흥 웨이브엠호텔 웨스트\n\n아래 링크에서 참석 여부 알려주세요! (2분이면 끝!)\n👉 ${window.location.href}`;
+  navigator.clipboard.writeText(msg).then(() => {
+    const toast = document.getElementById('copyToast');
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  });
+}
+
+// ── Confetti ──
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const colors = ['#7B6FC0','#B8ADE8','#F4B8D0','#B5EAD7','#FFF3C4','#BDE0FE','#FFB5A7','#FDDBC7'];
+  const pieces = [];
+  for (let i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random()*canvas.width, y: Math.random()*canvas.height - canvas.height,
+      w: Math.random()*10+4, h: Math.random()*6+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      vy: Math.random()*3+2, vx: (Math.random()-0.5)*2.5,
+      rot: Math.random()*360, rv: (Math.random()-0.5)*8, opacity: 1,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    });
+  }
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.opacity <= 0) return;
+      alive = true; p.y += p.vy; p.x += p.vx; p.rot += p.rv;
+      if (p.y > canvas.height*0.8) p.opacity -= 0.02;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha = Math.max(0,p.opacity); ctx.fillStyle = p.color;
+      if (p.shape === 'circle') {
+        ctx.beginPath(); ctx.arc(0,0,p.w/2,0,Math.PI*2); ctx.fill();
+      } else {
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      }
+      ctx.restore();
+    });
+    frame++;
+    if (alive && frame < 200) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ── Deadline Countdown ──
+function updateDeadline() {
+  const deadline = new Date('2026-03-19T00:00:00+09:00'); // 3월 18일 자정(=19일 0시) KST
+  const now = new Date();
+  const diff = deadline - now;
+  const el = document.getElementById('deadlineTimer');
+  const wrap = document.getElementById('deadlineCountdown');
+  if (diff <= 0) {
+    el.textContent = '마감되었습니다';
+    el.style.color = 'var(--coral)';
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  el.textContent = `${d}일 ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+updateDeadline();
+setInterval(updateDeadline, 1000);
+
+// ── Input listeners ──
+document.getElementById('userName').addEventListener('input', () => document.getElementById('nameError').classList.remove('show'));
+document.getElementById('keywordInput').addEventListener('input', () => document.getElementById('prefError').classList.remove('show'));
+</script>
+</body>
+</html>
