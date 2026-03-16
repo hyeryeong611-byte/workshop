@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Admin Dashboard</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --purple:#7B6FC0; --lavender:#B8ADE8; --pink:#F4B8D0;
+    --mint:#B5EAD7; --peach:#FDDBC7; --sky:#BDE0FE; --coral:#FFB5A7;
+    --dark:#3D3558; --gray:#8B83A6; --bg:#F0EBF8;
+  }
+  body { font-family:'Pretendard',sans-serif; background:var(--bg); color:var(--dark); min-height:100vh; }
+
+  /* ── Login ── */
+  .login-wrap {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg,#E8E0F4,#F7E8EF,#E0EAF7);
+  }
+  .login-card {
+    background:rgba(255,255,255,0.7); backdrop-filter:blur(24px);
+    border-radius:28px; padding:48px 36px; width:360px; text-align:center;
+    border:1.5px solid rgba(255,255,255,0.8);
+    box-shadow:0 8px 32px rgba(91,79,160,0.08);
+  }
+  .login-card h1 { font-size:24px; color:var(--purple); margin-bottom:8px; }
+  .login-card p { font-size:14px; color:var(--gray); margin-bottom:24px; }
+  .login-card input {
+    width:100%; padding:14px 16px; border:1.5px solid rgba(184,173,232,0.3);
+    border-radius:16px; font-size:15px; font-family:inherit; outline:none;
+    background:rgba(255,255,255,0.7); text-align:center; letter-spacing:2px;
+  }
+  .login-card input:focus { border-color:var(--lavender); box-shadow:0 0 0 4px rgba(184,173,232,0.15); }
+  .login-card button {
+    width:100%; padding:14px; border:none; border-radius:50px; margin-top:16px;
+    background:linear-gradient(135deg,var(--purple),var(--lavender));
+    color:white; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .login-error { color:var(--coral); font-size:13px; margin-top:10px; display:none; }
+
+  /* ── Dashboard ── */
+  .dashboard { display:none; max-width:1100px; margin:0 auto; padding:24px 20px 40px; }
+  .dashboard.show { display:block; }
+  .dash-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:24px; flex-wrap:wrap; gap:12px;
+  }
+  .dash-header h1 { font-size:22px; color:var(--purple); }
+  .dash-header .refresh-btn {
+    padding:10px 20px; border:1.5px solid rgba(184,173,232,0.3);
+    border-radius:50px; background:rgba(255,255,255,0.6);
+    font-size:13px; font-weight:600; cursor:pointer; color:var(--purple);
+    font-family:inherit; backdrop-filter:blur(8px);
+  }
+  .dash-header .refresh-btn:hover { background:rgba(255,255,255,0.85); }
+
+  /* ── Stats Grid ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:12px; margin-bottom:24px; }
+  .stat-card {
+    background:rgba(255,255,255,0.6); backdrop-filter:blur(16px);
+    border-radius:20px; padding:20px 16px; text-align:center;
+    border:1.5px solid rgba(255,255,255,0.7);
+  }
+  .stat-emoji { font-size:28px; margin-bottom:6px; }
+  .stat-num { font-size:32px; font-weight:800; color:var(--purple); }
+  .stat-label { font-size:12px; color:var(--gray); margin-top:2px; }
+
+  /* ── Section Card ── */
+  .section {
+    background:rgba(255,255,255,0.6); backdrop-filter:blur(16px);
+    border-radius:20px; padding:24px; margin-bottom:16px;
+    border:1.5px solid rgba(255,255,255,0.7);
+  }
+  .section h3 { font-size:16px; color:var(--purple); margin-bottom:14px; }
+
+  /* ── Bar Chart ── */
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .bar-label { font-size:13px; font-weight:600; min-width:80px; text-align:right; color:var(--dark); }
+  .bar-track { flex:1; height:28px; background:rgba(184,173,232,0.1); border-radius:14px; overflow:hidden; position:relative; }
+  .bar-fill { height:100%; border-radius:14px; transition:width 0.6s ease; display:flex; align-items:center; padding-left:10px; }
+  .bar-fill span { font-size:12px; font-weight:700; color:white; white-space:nowrap; }
+  .bar-count { font-size:13px; font-weight:600; min-width:36px; color:var(--gray); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; padding:10px 12px; color:var(--purple); font-weight:700; border-bottom:2px solid rgba(184,173,232,0.2); font-size:12px; white-space:nowrap; }
+  td { padding:10px 12px; border-bottom:1px solid rgba(184,173,232,0.08); }
+  tr:hover td { background:rgba(184,173,232,0.04); }
+  .badge {
+    display:inline-block; padding:3px 10px; border-radius:50px;
+    font-size:11px; font-weight:700;
+  }
+  .badge-attend { background:rgba(181,234,215,0.3); color:#2D8B6F; }
+  .badge-absent { background:rgba(255,181,167,0.3); color:#C0392B; }
+  .badge-yes { background:rgba(189,224,254,0.3); color:#2471A3; }
+  .badge-no { background:rgba(253,219,199,0.3); color:#A04000; }
+  .btn-del {
+    padding:4px 10px; border:1.5px solid rgba(255,181,167,0.4); border-radius:50px;
+    background:rgba(255,255,255,0.5); color:#C0392B; font-size:11px; font-weight:600;
+    cursor:pointer; font-family:inherit; transition:all 0.2s ease;
+  }
+  .btn-del:hover { background:rgba(255,181,167,0.2); border-color:#C0392B; }
+  .btn-del:disabled { opacity:0.4; cursor:not-allowed; }
+  .confirm-modal {
+    position:fixed; inset:0; background:rgba(61,53,88,0.4); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center; z-index:999; display:none;
+  }
+  .confirm-modal.show { display:flex; }
+  .confirm-box {
+    background:rgba(255,255,255,0.9); backdrop-filter:blur(24px);
+    border-radius:20px; padding:32px 28px; width:340px; text-align:center;
+    border:1.5px solid rgba(255,255,255,0.8); box-shadow:0 8px 32px rgba(91,79,160,0.12);
+  }
+  .confirm-box h3 { font-size:16px; color:var(--dark); margin-bottom:8px; }
+  .confirm-box p { font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.5; }
+  .confirm-btns { display:flex; gap:10px; }
+  .confirm-btns button { flex:1; padding:12px; border-radius:50px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; border:none; }
+  .confirm-cancel { background:rgba(184,173,232,0.15); color:var(--purple); }
+  .confirm-cancel:hover { background:rgba(184,173,232,0.25); }
+  .confirm-delete { background:var(--coral); color:white; }
+  .confirm-delete:hover { background:#E06469; }
+
+  .loading-msg { text-align:center; padding:40px; color:var(--gray); font-size:15px; }
+
+  @media(max-width:600px) {
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .dash-header { flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <h1>🔒 Admin</h1>
+    <p>워크샵 관리자 대시보드</p>
+    <input type="password" id="keyInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">로그인</button>
+    <div class="login-error" id="loginError">비밀번호가 틀렸어요!</div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-header">
+    <h1>📊 워크샵 대시보드</h1>
+    <button class="refresh-btn" onclick="loadData()">🔄 새로고침</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <!-- RSVP -->
+  <div class="section">
+    <h3>📋 RSVP 현황</h3>
+    <div id="rsvpChart"></div>
+  </div>
+
+  <!-- MBTI -->
+  <div class="section">
+    <h3>🧠 MBTI 분포</h3>
+    <div id="mbtiChart"></div>
+  </div>
+
+  <!-- T-shirt -->
+  <div class="section">
+    <h3>👕 티셔츠 사이즈</h3>
+    <div id="tshirtChart"></div>
+  </div>
+
+  <!-- Team Activity -->
+  <div class="section">
+    <h3>🎯 팀 활동 선호도</h3>
+    <div id="teamChart"></div>
+  </div>
+
+  <!-- Full Table -->
+  <div class="section">
+    <h3>📝 전체 응답 목록</h3>
+    <div class="table-wrap" id="tableWrap">
+      <div class="loading-msg">데이터를 불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-box">
+    <h3>🗑️ 응답 삭제</h3>
+    <p><strong id="delName"></strong>님의 응답을 삭제할까요?<br>이 작업은 되돌릴 수 없어요!</p>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">취소</button>
+      <button class="confirm-delete" onclick="confirmDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Supabase Config ──
+const SUPABASE_URL = 'https://moqgjlwbkbqpclhzqrbw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vcWdqbHdia2JxcGNsaHpxcmJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjAxODcsImV4cCI6MjA4OTE5NjE4N30.J6QE6nv1BU-RO0oE6D5ssaF3p4P7qkIGIiEsuOIiUJg';
+// ★ 비밀번호는 클라이언트에 없음! Supabase DB에서 서버 검증
+let adminPw = '';
+
+function doLogin() {
+  adminPw = document.getElementById('keyInput').value.trim();
+  if (!adminPw) return;
+  document.getElementById('loginError').style.display = 'none';
+  loadData();
+}
+
+async function loadData() {
+  try {
+    // 서버 함수(RPC)로 비밀번호 검증 + 데이터 조회를 한번에
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_admin_data`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ pw: adminPw })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      if (err.message && err.message.includes('Invalid password')) {
+        document.getElementById('loginError').style.display = 'block';
+        return;
+      }
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashboard').classList.add('show');
+    renderDashboard(data);
+  } catch (e) {
+    document.getElementById('loginError').textContent = '연결 실패: ' + e.message;
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function renderDashboard(data) {
+  const total = data.length;
+  const attend = data.filter(d => d.rsvp === 'attend').length;
+  const absent = data.filter(d => d.rsvp === 'absent').length;
+  const carYes = data.filter(d => d.transport === 'yes').length;
+  const bfYes = data.filter(d => d.breakfast === 'yes').length;
+
+  // Stats
+  document.getElementById('statsGrid').innerHTML = `
+    ${statCard('📨','총 응답',total)}
+    ${statCard('🙋','참석',attend)}
+    ${statCard('😢','불참',absent)}
+    ${statCard('🚗','자차',carYes)}
+    ${statCard('🚌','셔틀',attend - carYes)}
+    ${statCard('🍳','조식',bfYes)}
+  `;
+
+  // RSVP
+  const rsvpMax = Math.max(attend, absent, 1);
+  document.getElementById('rsvpChart').innerHTML =
+    barRow('참석', attend, rsvpMax, '#B5EAD7') +
+    barRow('불참', absent, rsvpMax, '#FFB5A7');
+
+  // MBTI
+  const mbti = count(data, 'mbti');
+  const mbtiMax = Math.max(...Object.values(mbti), 1);
+  document.getElementById('mbtiChart').innerHTML =
+    Object.entries(mbti).sort((a,b) => b[1]-a[1])
+      .map(([k,v]) => barRow(k, v, mbtiMax, '#B8ADE8')).join('');
+
+  // T-shirt
+  const ts = count(data, 'tshirt');
+  const tsOrder = ['S','M','L','XL','XXL'];
+  const tsMax = Math.max(...Object.values(ts), 1);
+  document.getElementById('tshirtChart').innerHTML =
+    tsOrder.filter(s => ts[s]).map(s => barRow(s, ts[s], tsMax, '#BDE0FE')).join('');
+
+  // Team Activity
+  const team = {};
+  data.forEach(d => {
+    (d.team_activity||'').split(',').forEach(a => {
+      a = a.trim(); if (a) team[a] = (team[a]||0) + 1;
+    });
+  });
+  const teamMax = Math.max(...Object.values(team), 1);
+  document.getElementById('teamChart').innerHTML =
+    Object.entries(team).sort((a,b) => b[1]-a[1])
+      .map(([k,v]) => barRow(k, v, teamMax, '#F4B8D0')).join('');
+
+  // Table
+  document.getElementById('tableWrap').innerHTML = renderTable(data);
+}
+
+function statCard(emoji, label, num) {
+  return `<div class="stat-card"><div class="stat-emoji">${emoji}</div><div class="stat-num">${num}</div><div class="stat-label">${label}</div></div>`;
+}
+
+function barRow(label, value, max, color) {
+  const pct = Math.round(value / max * 100);
+  return `<div class="bar-row">
+    <div class="bar-label">${label}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"><span>${value}</span></div></div>
+  </div>`;
+}
+
+function count(data, key) {
+  const m = {};
+  data.forEach(d => { const v = d[key]; if (v) m[v] = (m[v]||0)+1; });
+  return m;
+}
+
+function renderTable(data) {
+  if (!data.length) return '<div class="loading-msg">아직 응답이 없어요</div>';
+  const cols = [
+    {key:'name', label:'이름'},
+    {key:'rsvp', label:'RSVP'},
+    {key:'mbti', label:'MBTI'},
+    {key:'transport', label:'자차'},
+    {key:'tshirt', label:'티셔츠'},
+    {key:'breakfast', label:'조식'},
+    {key:'team_activity', label:'팀 활동'},
+    {key:'keyword', label:'키워드'},
+    {key:'friends', label:'친한 동료'},
+  ];
+  let html = '<table><thead><tr>';
+  cols.forEach(c => html += `<th>${c.label}</th>`);
+  html += '<th></th>';
+  html += '</tr></thead><tbody>';
+  data.forEach(d => {
+    html += '<tr>';
+    cols.forEach(c => {
+      let val = d[c.key] || '-';
+      if (c.key === 'rsvp') {
+        val = val === 'attend' ? '<span class="badge badge-attend">참석</span>' : '<span class="badge badge-absent">불참</span>';
+      } else if (c.key === 'transport' || c.key === 'breakfast') {
+        val = val === 'yes' ? '<span class="badge badge-yes">O</span>' : '<span class="badge badge-no">X</span>';
+      }
+      html += `<td>${val}</td>`;
+    });
+    html += `<td><button class="btn-del" onclick="askDelete(${d.id},'${(d.name||'').replace(/'/g,"\\'")}')">삭제</button></td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+// ── Delete ──
+let pendingDeleteId = null;
+
+function askDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('delName').textContent = name;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function closeConfirm() {
+  pendingDeleteId = null;
+  document.getElementById('confirmModal').classList.remove('show');
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  const btn = document.querySelector('.confirm-delete');
+  btn.textContent = '삭제 중...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/delete_admin_response`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ pw: adminPw, row_id: pendingDeleteId })
+    });
+    if (!res.ok) throw new Error('삭제 실패');
+    closeConfirm();
+    loadData();
+  } catch (e) {
+    alert('삭제 실패: ' + e.message);
+  }
+  btn.textContent = '삭제';
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>
